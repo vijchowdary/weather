@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Forecast</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f5f5f5;
+           
+            
+            
+        }
+        .container {
+            text-align: center;
+            height: 50vh;
+            background-color: rgb(21, 209, 209);
+            border-radius: 5px;
+            width:30%;
+        }
+    </style>
+</head>
+<body>
+    
+    
+    <div class="container">
+        <h1>Weather Forecast</h1>
+        <form id="location-form">
+            <input type="text" id="location-input" placeholder="Enter City Name">
+            <button type="submit">Submit</button>
+        </form>
+        <div id="weather"></div>
+    </div>
+
+    <script>
+        document.getElementById('location-form').addEventListener('submit', e => {
+            e.preventDefault();
+            const city = document.getElementById('location-input').value;
+
+            // Fetch weather data
+            fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=072aa64c352cb25d969e19fb8ce966ba`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('City not found');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const weatherInfo = {
+                        city: data.name,
+                        temperature: Math.round(data.main.temp - 273.15), // Convert from Kelvin to Celsius
+                        description: data.weather[0].description,
+                    };
+
+                    // Display weather information
+                    document.getElementById('weather').innerHTML = `
+                        <h2>${weatherInfo.city}</h2>
+                        <p>Temperature: ${weatherInfo.temperature}°C</p>
+                        <p>Description: ${weatherInfo.description}</p>
+                    `;
+                })
+                .catch(error => {
+                    console.error(error);
+                    document.getElementById('weather').innerHTML = '<p>City not found. Please try again.</p>';
+                });
+        });
+    </script>
+</body>
+</html>
